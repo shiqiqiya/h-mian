@@ -22,8 +22,8 @@
     <template>
       <el-table :data="tableData" style="width: 100%">
         <el-table-column type="selection" width="60"></el-table-column>
-        <el-table-column prop="date" label="用户名" min-width="100"></el-table-column>
-        <el-table-column prop="name" label="日期" min-width="100"></el-table-column>
+        <el-table-column prop="title" label="用户名" min-width="100"></el-table-column>
+        <el-table-column prop="create_date" label="日期" min-width="100"></el-table-column>
         <el-table-column prop="address" label="操作" width="120">
           <el-button type="primary" icon="el-icon-edit" circle></el-button>
           <el-button type="danger" icon="el-icon-delete" circle></el-button>
@@ -34,36 +34,52 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage4"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
-        layout=" prev, pager, next, sizes, jumper"
-        :total="400"
+        :current-page="paramsObj.page"
+        :page-sizes="[2, 3, 4, 5]"
+        :page-size="paramsObj.pagesize"
+        layout="total, prev, pager, next, sizes, jumper"
+        :total="total"
       ></el-pagination>
     </div>
   </el-card>
 </template>
 
 <script>
+import { list } from '@/api/base/permissions'
 export default {
-  async created () {
-    const res = this.$
-    console.log(res)
+  created () {
+    this.list()
   },
   data () {
     return {
+      paramsObj: {
+        page: 1, // 默认显示第几页
+        pagesize: 4 // 每页显示数量
+      },
       input: '',
-      pagelist: [],
+      total: null,
+      List: [],
       tableData: [],
       currentPage4: 4
     }
   },
   methods: {
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    handleSizeChange (pagesize) {
+      this.paramsObj.pagesize = pagesize
+      this.list()
     },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+    handleCurrentChange (page) {
+      console.log(page)
+      this.paramsObj.page = page
+      this.list()
+    },
+    async list () {
+      const res = await list(this.paramsObj)
+      this.List = res.data
+      this.total = this.List.counts
+      this.tableData = this.List.list
+      console.log(res)
+      console.log(this.tableData.create_date)
     }
   },
   computed: {},

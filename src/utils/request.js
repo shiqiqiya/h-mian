@@ -6,9 +6,9 @@ import { getToken } from '@/utils/auth'
 // create an axios instance
 const instance = axios.create({
   // http://8.131.91.46:7001/
-  // http://www.linweisong.top:7001/
+  // http://liufusong.top:7001/
   // baseURL: 'http://liufusong.top:7001/', // api的base_url
-  baseURL: 'http://www.linweisong.top:7001//',
+  baseURL: 'http://liufusong.top:7001//',
   timeout: 15000 // request timeout
 })
 
