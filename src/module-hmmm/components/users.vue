@@ -38,39 +38,45 @@
       </template>
     </el-card>
     <template>
-      <el-dialog title="新增用户" :visible="dialogVisible" width="30%">
+      <el-dialog title="新增用户" :visible.sync="dialogVisible" width="30%">
         <el-form :model="upuser">
-          <el-form-item label="用户名" v-model="upuser.username">
-            <el-input></el-input>
+          <el-form-item label="用户名">
+            <el-input v-model="upuser.username"></el-input>
           </el-form-item>
-          <el-form-item label="邮箱" v-model="upuser.email">
-            <el-input></el-input> </el-form-item
-          ><el-form-item label="密码" v-model="upuser.password">
-            <el-input></el-input> </el-form-item
-          ><el-form-item label="角色" v-model="upuser.role">
-            <el-input></el-input> </el-form-item
-          ><el-form-item
-            label="权限组名称"
-            v-model="upuser.permission_group_title"
-          >
-            <el-select></el-select> </el-form-item
-          ><el-form-item label="联系电话" v-model="upuser.phone">
-            <el-input></el-input> </el-form-item
+          <el-form-item label="邮箱">
+            <el-input v-model="upuser.email"></el-input> </el-form-item
+          ><el-form-item label="密码">
+            <el-input v-model="upuser.password"></el-input> </el-form-item
+          ><el-form-item label="角色">
+            <el-input v-model="upuser.role"></el-input> </el-form-item
+          ><el-form-item label="权限组名称">
+            <el-select
+              placeholder="请选择"
+              v-model="upuser.permission_group_title"
+            >
+              <el-option
+                v-for="item in tempGroupTitle"
+                :key="item.id"
+                :label="item.title"
+                :value="item.title"
+                @click="save"
+              ></el-option>
+            </el-select> </el-form-item
+          ><el-form-item label="联系电话">
+            <el-input v-model="upuser.phone"></el-input> </el-form-item
           ><el-form-item label="介绍">
             <el-input
               type="textarea"
               :rows="2"
               placeholder="请输入内容"
-              v-model="textarea"
+              v-model="upuser.introduction"
             >
             </el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="AddUsers"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="save">确 定</el-button>
         </span>
       </el-dialog>
     </template>
@@ -78,6 +84,7 @@
 </template>
 
 <script>
+import { permissionsList } from '@/api/base/permissions'
 import { list } from '@/api/base/users'
 export default {
   data () {
@@ -86,26 +93,27 @@ export default {
       userinfo: [],
       tableData: [],
       dialogVisible: false,
-      textarea: '',
+      tempGroupTitle: [], // 接收权限组
       upuser: {
         avatar: '', // 头像
         create_time: '', // 创建时间
         email: '', // 电子邮箱
         id: '', // 用户id
-        introduction: '', //
+        introduction: '', // 介绍
         is_deleted: '', //
-        last_update_time: '', //
+        last_update_time: '', // 最近一次更新时间
         permission_group_id: '', // 权限组ID
         permission_group_title: '', // 权限组名称
         phone: '', // 电话号码
         role: '', // 角色
-        username: ''// 用户名
+        username: '' // 用户名
 
       }
     }
   },
   created () {
     this.list()
+    this.detail()
   },
   methods: {
     tableRowClassName ({ row, rowIndex }) {
@@ -122,11 +130,20 @@ export default {
       console.log(res)
       this.tableData = res.data.list
     },
+    async detail () {
+      const res1 = await permissionsList(this.id)
+      console.log(res1)
+      this.tempGroupTitle = res1.data.list
+    },
     showDialog () {
       this.dialogVisible = true
     },
     AddUsers () {
       this.dialogVisible = false
+    },
+    save () {
+      this.upuser.create_time = Date()
+      console.log(this.upuser)
     }
 
   },
